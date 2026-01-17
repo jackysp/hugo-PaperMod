@@ -415,3 +415,24 @@ img.in-text {
     display: inline;
     margin: auto;
 }
+
+/* Mermaid diagram styles */
+.post-content .mermaid {
+    margin: 20px auto;
+    text-align: center;
+    background: transparent;
+    border-radius: var(--radius);
+    overflow-x: auto;
+}
+
+.post-content .mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ensure Mermaid diagrams are centered */
+.post-content .mermaid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

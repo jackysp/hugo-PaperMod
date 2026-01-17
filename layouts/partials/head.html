@@ -196,6 +196,27 @@
 
 {{- partial "extend_head.html" . -}}
 
+{{- /* Mermaid.js for diagram rendering */}}
+{{- if or (eq .Kind "page") (eq .Kind "section") }}
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    function getMermaidTheme() {
+        const html = document.querySelector('html');
+        const theme = html?.dataset?.theme || 'light';
+        return theme === 'dark' ? 'dark' : 'default';
+    }
+    
+    mermaid.initialize({ 
+        startOnLoad: false, 
+        theme: getMermaidTheme(),
+        securityLevel: 'loose'
+    });
+    window.mermaid = mermaid;
+    window.getMermaidTheme = getMermaidTheme;
+</script>
+{{- end }}
+
 {{- /* Misc */}}
 {{- if hugo.IsProduction | or (eq site.Params.env "production") }}
 {{- partial "google_analytics.html" . }}
