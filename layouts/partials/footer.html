@@ -121,28 +121,48 @@
             // Initialize Mermaid rendering
             window.mermaid.run();
             
-            // Update theme when theme toggle is used
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle && window.getMermaidTheme) {
-                themeToggle.addEventListener('click', function() {
-                    setTimeout(function() {
-                        if (window.mermaid && window.getMermaidTheme) {
-                            // Re-initialize with new theme
-                            window.mermaid.initialize({ 
-                                startOnLoad: false, 
-                                theme: window.getMermaidTheme(),
-                                securityLevel: 'loose'
-                            });
-                            // Re-render all Mermaid diagrams
-                            const mermaidDivs = document.querySelectorAll('.mermaid');
-                            mermaidDivs.forEach(function(div) {
-                                const content = div.textContent;
-                                div.innerHTML = '';
-                                div.textContent = content;
-                            });
-                            window.mermaid.run();
+            // Function to re-render Mermaid diagrams with current theme
+            function reRenderMermaid() {
+                if (window.mermaid && window.getMermaidTheme) {
+                    // Get current theme
+                    const newTheme = window.getMermaidTheme();
+                    
+                    // Re-initialize with new theme
+                    window.mermaid.initialize({ 
+                        startOnLoad: false, 
+                        theme: newTheme,
+                        securityLevel: 'loose'
+                    });
+                    
+                    // Clear and re-render all Mermaid diagrams
+                    const mermaidDivs = document.querySelectorAll('.mermaid');
+                    mermaidDivs.forEach(function(div) {
+                        // Store the original content
+                        const content = div.textContent || div.innerText;
+                        // Clear the rendered SVG
+                        div.innerHTML = '';
+                        // Restore the original Mermaid code
+                        div.textContent = content;
+                    });
+                    
+                    // Re-render all diagrams
+                    window.mermaid.run();
+                }
+            }
+            
+            // Use MutationObserver to watch for theme changes
+            const htmlElement = document.querySelector('html');
+            if (htmlElement && window.MutationObserver) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                            reRenderMermaid();
                         }
-                    }, 100);
+                    });
+                });
+                observer.observe(htmlElement, {
+                    attributes: true,
+                    attributeFilter: ['data-theme']
                 });
             }
         }
